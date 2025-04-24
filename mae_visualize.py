@@ -68,12 +68,12 @@ imagenet_mean = np.array([0.485, 0.456, 0.406])
 imagenet_std = np.array([0.229, 0.224, 0.225])
 
 
-chkpt_dir = '/tank/data/SFS/xinyis/shared/data/mae/output_dir_one_meter/checkpoint-399.pth'
+chkpt_dir = '/tank/data/SFS/xinyis/shared/data/mae/output_dir_one_meter/336/checkpoint-399.pth'
 model_mae = prepare_model(chkpt_dir, 'mae_vit_large_patch16')
 print('Model loaded.')
 
-img = Image.open("/tank/data/SFS/xinyis/shared/data/mae/one_meter_samples/OH_test_336/train/OH/USGS_one_meter_x76y436_OH_Clinton_2018patch_35_24.jpg")
-#img = img.resize((336, 336))
+img = Image.open("/tank/data/SFS/xinyis/shared/src/MUNIT/input_data/prepared/trainA/00000.jpg")
+img = img.resize((336, 336))
 img = np.array(img) / 255.
 #assert img.shape == (336, 336, 3)
 # normalize by ImageNet mean and std
@@ -87,8 +87,8 @@ print('MAE with pixel reconstruction:')
 run_one_image(img, model_mae, "1")
 
 
-img = Image.open("/tank/data/SFS/xinyis/shared/data/mae/one_meter_samples/OH_test_336/train/OH/USGS_one_meter_x76y436_OH_Clinton_2018patch_30_24.jpg")
-#img = img.resize((224, 224))
+img = Image.open("/tank/data/SFS/xinyis/shared/src/MUNIT/input_data/prepared/trainA/00006.jpg")
+img = img.resize((336, 336))
 img = np.array(img) / 255.
 #assert img.shape == (224, 224, 3)
 # normalize by ImageNet mean and std
