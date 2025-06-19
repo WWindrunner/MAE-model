@@ -1,3 +1,3 @@
-## Modified Masked Autoencoders for UCONN HPC
+## Modified Masked Autoencoders for UWM HPC
 
-Check UCONN_HPC_Submit.sh
+Check slurm_submit.sh

@@ -269,6 +269,10 @@ class MaskedAutoencoderViT(nn.Module):
 
     def forward(self, imgs, mask_ratio=0.75):
         latent, mask, ids_restore = self.forward_encoder(imgs, mask_ratio)
+
+        save_path = "/home/uwm/maopuxu/MAE_Topography_Reconstruction/MAE-Topography/after_codes/latent_code"
+        torch.save(latent, f'{save_path}/latent.pt')
+
         pred = self.forward_decoder(latent, ids_restore)  # [N, L, p*p*3]
         loss = self.forward_loss(imgs, pred, mask)
         return loss, pred, mask
