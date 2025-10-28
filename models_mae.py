@@ -27,7 +27,8 @@ class MaskedAutoencoderViT(nn.Module):
     def __init__(self, img_size=224, patch_size=16, in_chans=3,
                  embed_dim=1024, depth=24, num_heads=16,
                  decoder_embed_dim=512, decoder_depth=8, decoder_num_heads=16,
-                 mlp_ratio=4., norm_layer=nn.LayerNorm, norm_pix_loss=False):
+                 mlp_ratio=4., norm_layer=nn.LayerNorm, norm_pix_loss=False,
+                 save_path=""):
         super().__init__()
 
         # --------------------------------------------------------------------------
@@ -63,6 +64,8 @@ class MaskedAutoencoderViT(nn.Module):
         self.norm_pix_loss = norm_pix_loss
 
         self.initialize_weights()
+
+        self.save_path=save_path
 
     def initialize_weights(self):
         # initialization
@@ -198,7 +201,6 @@ class MaskedAutoencoderViT(nn.Module):
         mask = torch.gather(mask, dim=1, index=ids_restore)
 
         return x_masked, mask, ids_restore
-
     
     def forward_encoder(self, x, mask_ratio):
         # embed patches
@@ -208,8 +210,8 @@ class MaskedAutoencoderViT(nn.Module):
         x = x + self.pos_embed[:, 1:, :]
 
         # masking: length -> length * mask_ratio
-        #x, mask, ids_restore = self.random_masking(x, mask_ratio)
-        x, mask, ids_restore = self.middle_masking(x, mask_ratio)
+        x, mask, ids_restore = self.random_masking(x, mask_ratio)
+        #x, mask, ids_restore = self.middle_masking(x, mask_ratio)
         
         # append cls token
         cls_token = self.cls_token + self.pos_embed[:, :1, :]
@@ -267,11 +269,12 @@ class MaskedAutoencoderViT(nn.Module):
         loss = (loss * mask).sum() / mask.sum()  # mean loss on removed patches
         return loss
 
-    def forward(self, imgs, mask_ratio=0.75):
+    def forward(self, imgs, mask_ratio=0.75, file_name=""):
         latent, mask, ids_restore = self.forward_encoder(imgs, mask_ratio)
 
-        save_path = "/home/uwm/maopuxu/MAE_Topography_Reconstruction/MAE-Topography/after_codes/latent_code"
-        torch.save(latent, f'{save_path}/latent.pt')
+        #save_path = "/home/uwm/maopuxu/MAE_Topography_Reconstruction/MAE-Topography/after_codes/latent_code"
+        if self.save_path != "" and file_name != "":
+            torch.save(latent, f'{self.save_path}/{file_name}_latent.pt')
 
         pred = self.forward_decoder(latent, ids_restore)  # [N, L, p*p*3]
         loss = self.forward_loss(imgs, pred, mask)
